@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>2048</title>
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+   <!-- <link rel="stylesheet" href="style.css"> -->
+   <style>
+    body{
+        display: grid;
+        place-content: center;
+        height: 100vh;
+        background-color: rgb(63, 68, 80);
+        background-color: #faf8ef;
+        font-family:Arial, Helvetica, sans-serif;
+    }
+    #board{
+        display: grid;
+        /* grid-template-rows: repeat(4, 1fr); */
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        max-width: max-content;
+        background-color: #bbada0;
+        padding: 15px;
+        border-radius: 5px;
+    }
+    .tile{
+        width:105px;
+        height: 105px;
+        background-color: #cdc1b4;
+        border-radius: 5px;
+        font-size: 55px;
+        font-weight: bold;
+        display: grid;
+        place-content: center;
+        /* transition: 0.2s all; */
+        /* overflow: hidden; */
+    }
+    .animation{
+        animation: zoom ease .2s;
+    }
+    @keyframes zoom {
+        0%{
+            scale: 0;
+        }
+        50%{
+            scale: 0.5;
+        }
+        100%{
+            scale: 1;
+        }
+    }
+    /* #board span{
+        width:100%;
+        height: 100%;
+        display: block;
+        position: relative;
+    }
+    span::after{
+        position: absolute;
+        font-size: 60px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    ._2{
+        background-color: #eee4da;
+        color: #776e65;
+    }
+    ._2::after{
+        content: '2';
+    }
+    ._4{
+        background-color: #eee1c9;
+        color: #776e65;
+    }
+    ._4::after{
+        content: '4';
+    }
+    ._8{
+        background-color: #f3b279;
+        color: #FFF;
+    }
+    ._16{
+        background-color: #f69664;
+        color: #FFF;
+    }
+    ._32{
+        background-color: #f77c5f;
+        color: #FFF;
+    }
+    ._64{
+        background-color: #f75f3b;
+        color: #FFF;
+    } */
+
+    /* colored tiles */
+
+    .x2 {
+        background-color: #eee4da;
+        color: #727371;
+    }
+
+    .x4 {
+        background-color: #ece0ca;
+        color: #727371;
+    }
+
+    .x8 {
+        background-color: #f4b17a;
+        color: white;
+    }
+
+    .x16{
+        background-color: #f59575;
+        color: white;
+    }
+
+    .x32{
+        background-color: #f57c5f;
+        color: white;
+    }
+
+    .x64{
+        background-color: #f65d3b;
+        color: white;
+    }
+
+    .x128{
+        background-color: #edce71;
+        color: white;
+        font-size: 45px;
+    }
+
+    .x256{
+        background-color: #edcc63;
+        color: white;
+        font-size: 45px;
+    }
+
+    .x512{
+        background-color: #edc651;
+        color: white;
+        font-size: 45px;
+    }
+
+    .x1024{
+        background-color: #eec744;
+        color: white;
+        font-size: 35px;
+    }
+
+    .x2048{
+        background-color: #ecc230;
+        color: white;
+        font-size: 45px;
+    }
+
+    .x4096 {
+        background-color: #fe3d3d;
+        color: white;
+        font-size: 45px;
+    }
+
+    .x8192 {
+        background-color: #ff2020;
+        color: white;
+    }
+
+    .title{
+        font-size: 80px;
+        font-weight: bold;
+        color:#776e65;
+    }
+    .scores{
+        display:flex;
+        gap: 8px;
+    }
+    h3{
+        background-color: #bbada0;
+        font-size: 25px;
+        color: #FFF;
+        min-width: 100px;
+        max-width: max-content;
+        border-radius: 4px;
+        padding: 5px;
+        /* height: 25px; */
+        position: relative;
+        text-align: center;
+        padding-top: 20px;
+    }
+    h3 span{
+        margin-top: 8px;
+        display: block;
+        font-weight: bold;
+    }
+    h3::after{
+        position: absolute;
+        left: 50%;
+        top: 10px;
+        text-transform: uppercase;
+        color: #eee4da;
+        font-weight: bold;
+        font-size: 13px;
+        transform: translateX(-50%);
+    }
+    h3.score::after{
+        content: 'score';
+    }
+    h3.best::after{
+        content: 'best';
+    }
+
+    .join-the-tiles{
+        color: #776e65;
+        font-size: 18px;
+    }
+
+    #resetGame,
+    #saveGame{
+        background: #8f7a66;
+        border-radius: 3px;
+        padding: 10px 20px;
+        color: #f9f6f2;
+        font-size: 18px;
+        font-weight: bold;
+        text-transform: capitalize;
+    }
+    .inst{
+        color:#776e65;
+    }
+    @media (max-width:767px) {
+        .inst{
+            display: none;
+        }
+        .tile{
+            width: 80px;
+            height: 80px;
+            font-size: 45px;
+        }
+        #board{
+            gap: 10px;
+            padding: 10px;
+        }
+        .title {
+            font-size: 50px;
+        }
+        .x128{
+            font-size: 35px;
+        }
+
+        .x256{
+            font-size: 35px;
+        }
+
+        .x512{
+            font-size: 35px;
+        }
+
+        .x1024{
+            font-size: 25px;
+        }
+
+        .x2048{
+            font-size: 25px;
+        }
+
+        .x4096 {
+            font-size: 25px;
+        }
+    }
+
+   
+    </style>
+
+</head>
+<body>
+
+    <div class="container">
+        <div class="head d-flex justify-content-between align-items-start">
+            <h1 class="title">2048</h1>
+            <div class="scores">
+                <h3 class="score"><span id="score">0</span></h3>
+                <h3 class="best"><span id="bestScore">0</span></h3>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-3 mt-md-1 mb-4 mb-md-5">
+            <div class="join-the-tiles">Join the tiles, get to <strong>2048!</strong></div>
+            <div class="btns">
+                <div class="btn" id="resetGame">new game</div>
+                <div class="btn" id="saveGame">save</div>
+            </div>
+
+        </div>
+        
+        <div id="board" class="ms-auto me-auto">
+
+        </div>
+
+        <div class="inst mt-5">use arrow keys to play</d>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- <script src="script.js"></script> -->
+
+    <script>
+
+        let board;
+        // const boardM = document.getElementById('board');
+        let rows = 4;
+        let columns = 4;
+        let score = 0;
+        let best = localStorage.getItem('bestScore');
+        const initialBoard = [
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0]
+            ];
+
+        window.onload = function(){
+            startGame();
+            $('#bestScore').html(best);
+        }
+
+        function startGame(){
+            board = JSON.parse(localStorage.getItem('board')) ?JSON.parse(localStorage.getItem('board')) :initialBoard;
+
+            localStorage.setItem('board', null);
+            for(let r = 0;r<rows;r++){
+                for(let c = 0;c<columns;c++){
+                    const tile = document.createElement('div');
+                    tile.id = r+'-'+c;
+                    let num = board[r][c];
+                    updateTile(tile, num);
+                    document.getElementById('board').append(tile);
+                }
+            }
+
+            setTwo();
+            setTwo();
+        }
+
+        function hasEmptyTile(){
+            for(let r = 0;r<rows;r++){
+                for(let c = 0;c<columns;c++){
+                    if(board[r][c] == 0){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function setTwo(){
+            
+            if(!hasEmptyTile()){
+                alert('game over!');
+                return;
+            }
+
+            let isPlaced = false;
+
+            while(!isPlaced){
+                let r = Math.floor(Math.random() * rows);
+                let c = Math.floor(Math.random() * columns);
+
+                if(board[r][c] == 0){
+                    board[r][c] = 2;
+                    let tile = document.getElementById(r+'-'+c);
+                    tile.innerText = '2';
+                    tile.classList.add('x2');
+                    isPlaced = true;
+                }
+            }
+        }
+
+
+        function updateTile(tile, num){
+            tile.innerText = '';
+            tile.classList.value = '';
+            tile.classList.add('tile');
+            if(num>0){
+                tile.innerText = num;
+                if(num<=4096){
+                    tile.classList.add('x'+num);
+                    // tile.classList.add('animation');
+                }
+                else{
+                    tile.classList.add('x'+8192);
+                }
+            }
+        }
+
+        document.addEventListener('keyup', (e)=>{
+            if(e.code == 'ArrowLeft'){
+                slideLeft();
+                setTwo();
+            }
+            else if(e.code == 'ArrowRight'){
+                slideRight();
+                setTwo();
+            }
+            else if(e.code == 'ArrowUp'){
+                slideUp();
+                setTwo();
+            }
+            else if(e.code == 'ArrowDown'){
+                slideDown();
+                setTwo();
+            }
+            $('#score').html(score);
+            if(best < score){
+                $('#bestScore').html(score);
+                localStorage.setItem('bestScore', score);
+            }
+            
+        });
+
+        function filterZero(row){
+            return row.filter(i => i!=0);
+        }
+
+        function slide(row){
+            row = filterZero(row);
+
+            for(let i =0;i<row.length-1;i++){
+                if(row[i]==row[i+1]){
+                    row[i]*=2;
+                    row[i+1] = 0;
+                    score += row[i];
+                }
+            }
+            row = filterZero(row);
+
+            while(row.length<columns){
+                row.push(0);
+            }
+            return row;
+        }
+
+        function slideLeft(){
+            for(let r = 0;r<rows;r++){
+                let row = board[r];
+                row = slide(row);
+                board[r] = row;
+
+                for(let c = 0;c<columns;c++){
+                    let tile = document.getElementById(r+'-'+c);
+                    let num = board[r][c];
+                    updateTile(tile, num);
+                }
+            }
+        }
+
+        function slideRight(){
+            for(let r = 0;r<rows;r++){
+                let row = board[r];
+                row.reverse();
+                row = slide(row);
+                row.reverse();
+                board[r] = row;
+
+                for(let c = 0;c<columns;c++){
+                    let tile = document.getElementById(r+'-'+c);
+                    let num = board[r][c];
+                    updateTile(tile, num);
+                }
+            }
+        }
+
+
+        function slideUp(){
+            for(let c = 0;c<columns;c++){
+                let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+                row = slide(row);
+
+                for(let r = 0;r<columns;r++){
+                    board[r][c] = row[r];
+                    let tile = document.getElementById(r+'-'+c);
+                    let num = board[r][c];
+                    updateTile(tile, num);
+                }
+            }
+        }
+        function slideDown(){
+            for(let c = 0;c<columns;c++){
+                let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+                row.reverse();
+                row = slide(row);
+                row.reverse();
+
+                for(let r = 0;r<columns;r++){
+                    board[r][c] = row[r];
+                    let tile = document.getElementById(r+'-'+c);
+                    let num = board[r][c];
+                    updateTile(tile, num);
+                }
+            }
+        }
+
+        $('#resetGame').on('click', ()=>{
+            if(confirm('Do you really want to start a new game? all progress will be lost.')){
+                location.reload();
+            }
+        })
+        $('#saveGame').on('click', ()=>{
+            localStorage.setItem('board', JSON.stringify(board));
+        })
+
+
+
+        // mobile touch events
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.getElementById('board').addEventListener('touchstart', handleTouchStart, false);
+        document.getElementById('board').addEventListener('touchmove', handleTouchMove, false);
+        document.getElementById('board').addEventListener('touchend', handleTouchEnd, false);
+
+        function handleTouchStart(event) {
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
+        }
+
+        function handleTouchMove(event) {
+            event.preventDefault();
+        }
+
+        function handleTouchEnd(event) {
+            const touchEndX = event.changedTouches[0].clientX;
+            const touchEndY = event.changedTouches[0].clientY;
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Horizontal swipe
+                if (deltaX > 0) {
+                    // Swipe right
+                    handleArrowKey('ArrowRight');
+                } else {
+                    // Swipe left
+                    handleArrowKey('ArrowLeft');
+                }
+            } else {
+                // Vertical swipe
+                if (deltaY > 0) {
+                    // Swipe down
+                    handleArrowKey('ArrowDown');
+                } else {
+                    // Swipe up
+                    handleArrowKey('ArrowUp');
+                }
+            }
+        }
+
+        function handleArrowKey(keyCode) {
+            if(keyCode == 'ArrowLeft'){
+                slideLeft();
+            }
+            else if(keyCode == 'ArrowRight'){
+                slideRight();
+            }
+            else if(keyCode == 'ArrowUp'){
+                slideUp();
+            }
+            else if(keyCode == 'ArrowDown'){
+                slideDown();
+            }
+            $('#score').html(score);
+            setTwo();
+        }
+    </script>
+</body>
+</html>
