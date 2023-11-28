@@ -271,6 +271,9 @@
         .x4096 {
             font-size: 25px;
         }
+       #saveGame{
+         display:none;
+       }
     }
 
    
@@ -284,7 +287,9 @@
             <h1 class="title">2048</h1>
             <div class="scores">
                 <h3 class="score"><span id="score">0</span></h3>
-                <h3 class="best"><span id="bestScore">0</span></h3>
+                <h3 class="best d-none d-lg-block"><span id="bestScore">0</span></h3>
+                <h3 class="best d-lg-none"><span id="bestScore">0</span></h3>
+               
             </div>
         </div>
         <div class="d-flex justify-content-between mt-3 mt-md-1 mb-4 mb-md-5">
